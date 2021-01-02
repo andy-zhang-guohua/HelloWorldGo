@@ -18,6 +18,14 @@ func (p Person) String() string {
 	return "(name: " + p.name + " - age: "+strconv.Itoa(p.age)+ " years)"
 }
 
+func testReflect(variable Element){
+	t := reflect.TypeOf(variable)    // 得到类型的元数据,通过t我们能获取类型定义里面的所有元素
+	v := reflect.ValueOf(variable)
+
+	fmt.Printf("type : %v\n", t)
+	fmt.Printf("value : %v\n", v)
+}
+
 func main() {
 	list := make(List, 3)
 	list[0] = 1 // an int
@@ -36,9 +44,5 @@ func main() {
 		}
 	}
 
-	t := reflect.TypeOf(list[0])    // 得到类型的元数据,通过t我们能获取类型定义里面的所有元素
-	v := reflect.ValueOf(list[0])
-
-	fmt.Printf("type : %v\n", t)
-	fmt.Printf("value : %v\n", v)
+	testReflect(list[1]);
 }
