@@ -1,51 +1,22 @@
 package main // 要求这里报名必须是 main
 
 import (
-	"crypto/md5"
+	"encoding/json"
 	"fmt"
-	"html/template"
-	"io"
-	"log"
-	"net/http"
-	"os"
-	"strconv"
-	"time"
 )
 
-// 处理 /upload  逻辑
-func upload(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("method:", r.Method) // 获取请求的方法
-	if r.Method == "GET" {
-		crutime := time.Now().Unix()
-		h := md5.New()
-		io.WriteString(h, strconv.FormatInt(crutime, 10))
-		token := fmt.Sprintf("%x", h.Sum(nil))
+type Server struct {
+	ServerName string
+	ServerIP   string
+}
 
-		t, _ := template.ParseFiles("upload.gtpl")
-		t.Execute(w, token)
-	} else {
-		r.ParseMultipartForm(32 << 20)
-		file, handler, err := r.FormFile("uploadfile")
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		defer file.Close()
-		fmt.Fprintf(w, "%v", handler.Header)
-		f, err := os.OpenFile("./test"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)  // 此处假设当前目录下已存在test目录
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		defer f.Close()
-		io.Copy(f, file)
-	}
+type Serverslice struct {
+	Servers []Server
 }
 
 func main() {
-	http.HandleFunc("/upload", upload)
-	err := http.ListenAndServe(":9090", nil) // 设置监听的端口
-	if err != nil {
-		log.Fatal("ListenAndServe: ", err)
-	}
+	var s Serverslice
+	str := `{"servers":[{"serverName":"Shanghai_VPN","serverIP":"127.0.0.1"},{"serverName":"Beijing_VPN","serverIP":"127.0.0.2"}]}`
+	json.Unmarshal([]byte(str), &s)
+	fmt.Println(s)
 }
