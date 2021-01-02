@@ -1,18 +1,13 @@
 package main // 要求这里报名必须是 main
 
-import (
-	"fmt"
-	"runtime"
-)
-
-func say(s string) {
-	for i := 0; i < 5; i++ {
-		runtime.Gosched() // 表示让 CPU 把时间片让给别人，下次某个时候继续恢复执行该 goroutine
-		fmt.Println(s)
-	}
-}
+import "fmt"
 
 func main() {
-	go say("world") // 开一个新的 Goroutines 执行
-	say("hello") // 当前 Goroutines 执行
+	c := make(chan int, 2) // 修改 2 为 1 就报错，修改 2 为 3 可以正常运行
+	c <- 1
+	c <- 2
+	fmt.Println(<-c)
+	fmt.Println(<-c)
 }
+// 修改为 1 报如下的错误:
+// fatal error: all goroutines are asleep - deadlock!
