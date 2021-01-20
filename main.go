@@ -1,4 +1,4 @@
-package main // 要求这里报名必须是 main
+package main // 要求这里包名必须是 main
 
 import (
 	"encoding/json"
